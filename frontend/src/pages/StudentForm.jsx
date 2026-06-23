@@ -39,7 +39,9 @@ const DEFAULT_FORM = {
   bad_discipline:          0,
 
   // UI-only flags for today's attendance buttons.
-  _today_attended:         true,
+  // Default: neither Attended nor Not attended is selected.
+  _today_attended:         undefined,
+
 
 }
 
@@ -444,8 +446,9 @@ function StudentFormInner() {
     if (missing.length > 0) {
 
       const names = missing.slice(0,6).map(id => (students.find(s => s.id === Number(id)) || {}).name).filter(Boolean)
-      alert(`Please select Attendance for ${missing.length} student(s) before submitting. Example: ${names.join(', ')}.`)
+      alert('Please select attendance for all students before submitting')
       return
+
     }
 
     if (!window.confirm('Submit attendance for all selected students now?')) return
