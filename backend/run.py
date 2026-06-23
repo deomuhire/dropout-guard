@@ -1,0 +1,20 @@
+from app import create_app, db
+from app.models.user import User
+from app.models.school import School
+from app.models.student import Student
+from app.models.attendance import Attendance
+
+app = create_app()
+
+@app.shell_context_processor
+def make_shell_context():
+    return {
+        'db': db,
+        'User': User,
+        'School': School,
+        'Student': Student,
+        'Attendance': Attendance
+    }
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)

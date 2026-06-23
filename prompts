@@ -1,0 +1,37 @@
+You are an expert UX/Engineering diagrammer.
+
+Task: Generate a diagram (choose the best format from Mermaid flowchart, Mermaid sequence diagram, or UML activity/use-case) that represents the USER INTERACTIONS of the Dropout Risk Prediction System.
+
+Audience: product + engineering stakeholders.
+
+Diagram requirements (must follow):
+1) Cover the main user roles: superadmin, sector_leader, headmaster, dos, teacher.
+2) Focus on interactions visible in the UI (pages, modals, buttons) and the resulting backend API calls.
+3) The system is web-based with React frontend and Flask backend under /api.
+4) Include navigation/entry points (e.g., Dashboard, UserManagement, RiskFrequency, and attendance/student flows).
+5) For each role, show: UI components/actions → confirmation states → API requests → outcomes/error handling.
+6) Make it “tab-by-tab” / “screen-by-screen” when feasible: identify the key screens for that role.
+7) Include edge cases: empty tables, loading states, cancel actions, disabled buttons, and “leave password blank to keep” style behavior where applicable.
+8) Use clear labels, consistent naming, and avoid vague nodes like “do stuff”.
+9) Output ONE consolidated diagram for all roles OR, if the diagram becomes too large, output separate diagrams per role with a brief index.
+10) Do NOT output Mermaid or code. Output a short text description of the user-interaction flows (step-by-step “from screen A to screen B”, per role) that can be used by an image/diagram generator to create a diagram.
+
+Implementation hints (use these as anchors; do not assume missing details):
+- React pages to inspect conceptually: frontend/src/pages/UserManagement.jsx, frontend/src/pages/Dashboard.jsx, frontend/src/pages/RiskFrequency.jsx
+- API helper/baseURL: frontend/src/api/axios.js uses baseURL '/api' and sends JWT from localStorage.
+- Look for interactions like: Create/Edit user (modal), Activate/Deactivate, toggle leaders, upload students CSV, replace list, view teacher students, add/edit/delete students, risk-factor modal, download CSV.
+- Attendance flow on teacher side includes a button that navigates to a students attendance form route; attendance availability is blocked on weekends.
+
+Data to include in the diagram (where relevant):
+- Actors (roles) and their permissions.
+- Key UI actions: buttons/links per screen.
+- Key API endpoints invoked by those actions (use realistic paths like /api/users/, /api/students/, /api/attendance/... as they appear in code).
+- Outcomes: success (refresh/reload), failure (alert/form error banner), and loading spinners.
+
+Output format:
+- Mermaid diagram syntax.
+- If multiple diagrams are necessary, return them as separate Mermaid blocks with headings like “%% Role: teacher” (still Mermaid code blocks).
+
+Start by inferring the interaction model from the codebase, then create the diagram.
+
+Now generate the diagram.

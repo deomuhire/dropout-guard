@@ -1,0 +1,138 @@
+DropoutGuard — Users, Roles, Responsibilities, and How They Create Each Other
+================================================================================
+
+This document explains:
+1) Which user roles exist in the system
+2) What each role does
+3) How roles create each other (the registration/creation chain)
+4) The data-ownership rules enforced by the backend (who can see/manage which records)
+
+
+1) Roles in the system
+-----------------------
+The backend uses these roles:
+- superadmin
+- sector_leader
+- headmaster
+- dos
+- teacher
+
+
+2) Role responsibilities (what they do)
+----------------------------------------
+
+2.1 superadmin
+- Creates sector_leader accounts.
+- Has global visibility (can view all active data depending on endpoint logic).
+- Can toggle activation (activate/deactivate) for users they can manage (depending on UI/API scoping).
+
+
+2.2 sector_leader
+- Creates schools.
+- Creates headmaster accounts.
+- Views KPI/report data for schools created by them.
+
+
+2.3 headmaster
+- Creates DOS (dos) accounts for their school.
+- Views student attendance and risk KPIs for their school.
+- Can view/manage roster and drill down into school data (scoped to their school).
+
+
+2.4 dos (DOS)
+- Creates teacher accounts.
+- Ensures teachers have classes (roster/class assignment is represented by the Class model with a teacher_id).
+- Manages student lists for teachers/classes in their school:
+  - Add a student into a specific teacher’s class list
+  - “Delete” students via soft delete (is_active = False)
+  - Upload/replace students via CSV (DOS-only)
+
+
+2.5 teacher
+- Completes daily attendance + dropout-risk form for students assigned to their class.
+- Submits data to the ML prediction pipeline and stores prediction results per student per day.
+- Sees dashboards limited to their assigned class.
+
+
+3) How roles create each other (creation chain)
+-------------------------------------------------
+The intended hierarchy/creation flow in this codebase is:
+
+superadmin
+  → creates sector_leader accounts
+
+sector_leader
+  → creates schools
+  → creates headmaster accounts
+
+headmaster
+  → creates DOS (dos) accounts
+
+dos
+  → creates teacher accounts
+  → assigns teachers to classes (represented by Class.teacher_id; teacher can only access that class)
+
+teacher
+  → does not create other users in this app flow
+  → creates Attendance records by submitting daily attendance/risk forms
+
+
+4) Data ownership & access rules (how “who can do what” is enforced)
+-----------------------------------------------------------------------
+The backend enforces access using role checks and ownership fields such as:
+- user.role
+- user.school_id (for school-scoped roles)
+- school.created_by_id (sector_leader ownership)
+- Class.teacher_id (teacher/class assignment)
+
+
+4.1 Teacher access scope
+- A teacher can only access students whose class_id belongs to the Class assigned to that teacher.
+- When saving attendance, the backend checks:
+  - student.class_id matches the teacher’s assigned class
+
+Relevant routes:
+- GET  /api/attendance/student/<student_id>
+- POST /api/attendance/student/<student_id>
+
+
+4.2 DOS/Headmaster student access scope
+- DOS and headmaster can access students only within their own school (student.school_id must match current_user.school_id).
+
+Relevant routes:
+- GET  /api/attendance/risk-frequency
+- GET  /api/attendance/student/<student_id>/risk-factors
+- Student list and management endpoints:
+  - /api/dos-teachers-students/<teacher_id>/students
+  - /api/dos-teachers-students/<teacher_id>/students/add
+  - /api/dos-teachers-students/<teacher_id>/students/<student_id> (soft delete)
+
+
+4.3 Sector leader access scope
+- Sector leader can only access schools they created (School.created_by_id == current_user.id).
+- Student lists and KPIs for the sector are derived by collecting student.school_id values for those schools.
+
+Relevant routes:
+- GET /api/attendance/risk-frequency
+- GET /api/reports/sector/<sector_leader_id> (used by Dashboard for sector leader)
+
+
+4.4 Student lifecycle (soft delete)
+- “Deleting” a student does not remove the row; it sets student.is_active = False.
+- CSV import and roster replacement reactivate/overwrite via class_id + school_id and is_active toggling.
+
+Relevant behavior:
+- DELETE /api/dos-teachers-students/<teacher_id>/students/<student_id>
+- POST /api/students/import-csv (DOS-only)
+- CSV “replace” deactivates existing active students for that class
+
+
+5) Summary: who creates what
+------------------------------
+- superadmin creates: sector_leader
+- sector_leader creates: school, headmaster
+- headmaster creates: dos
+- dos creates: teacher, and manages teacher class student lists
+- teacher creates: Attendance (daily attendance/risk submissions) for assigned students
+
+

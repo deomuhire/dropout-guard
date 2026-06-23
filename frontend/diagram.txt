@@ -1,0 +1,1 @@
+Removed Mermaid diagram wrapper from frontend/diagram.md. The diagram prompt should be updated to ask for a step-by-step written interaction description (no Mermaid/code) instead of requesting Mermaid syntax.
