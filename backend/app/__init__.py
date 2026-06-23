@@ -38,7 +38,11 @@ def create_app():
     app.register_blueprint(locations_bp,  url_prefix='/api/locations')
 
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+            print("✅ Tables created successfully")
+        except Exception as e:
+            print(f"❌ Error creating tables: {e}")
         from app.models.user import User
         existing = User.query.filter_by(role='superadmin').first()
         if not existing:
