@@ -43,7 +43,7 @@ def create_app():
             db.create_all()
             print("✅ Tables created successfully")
             
-            from app.models.user import User
+            from .models.user import User
             existing = User.query.filter_by(role='superadmin').first()
             if not existing:
                 superadmin = User(
