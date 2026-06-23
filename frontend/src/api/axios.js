@@ -1,8 +1,9 @@
 import axios from 'axios'
 
 const api = axios.create({
-  // Use relative path so Vite devServer proxy routes all API calls to the Flask backend.
-  baseURL: '/api'
+  baseURL: import.meta.env.VITE_API_URL 
+    ? `${import.meta.env.VITE_API_URL}/api` 
+    : '/api'
 })
 
 // Attach JWT token to every request
