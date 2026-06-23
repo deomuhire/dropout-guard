@@ -40,10 +40,12 @@ const DEFAULT_FORM = {
 
   // UI-only flags for today's attendance buttons.
   // Default: neither Attended nor Not attended is selected.
-  _today_attended:         undefined,
+  // (null => both buttons unselected)
+  _today_attended:         null,
 
 
 }
+
 
 const getTodayAttendedValue = record => {
   if (!record?.is_today) return false
@@ -304,8 +306,8 @@ function StudentFormInner() {
     const studentName = studentData?.name ?? student?.name
     // Attended/Not attended are submission buttons (today attendance).
     // Highlighting must NOT depend on ML feature `absenteeism`.
-    const attendedSelected = Boolean(currentForm._today_attended)
-    const notAttendedSelected = Boolean(currentForm._today_attended) === false
+    const attendedSelected = currentForm._today_attended === true
+    const notAttendedSelected = currentForm._today_attended === false
 
 
 
@@ -444,12 +446,10 @@ function StudentFormInner() {
     const missing = Object.keys(forms).filter(sid => typeof forms[sid]._today_attended !== 'boolean')
 
     if (missing.length > 0) {
-
-      const names = missing.slice(0,6).map(id => (students.find(s => s.id === Number(id)) || {}).name).filter(Boolean)
       alert('Please select attendance for all students before submitting')
       return
-
     }
+
 
     if (!window.confirm('Submit attendance for all selected students now?')) return
     setBatchSaving(true)
@@ -567,7 +567,7 @@ function StudentFormInner() {
                   <tbody>
                     {students.map(st => {
                       const sForm = forms[st.id] ?? DEFAULT_FORM
-                      const attendedSelected = Boolean(sForm._today_attended)
+                      const attendedSelected = sForm._today_attended === true
                       const notAttendedSelected = sForm._today_attended === false
                       const currentSaving = savingIds.includes(st.id) || batchSaving
 
