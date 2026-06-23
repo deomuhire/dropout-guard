@@ -37,4 +37,22 @@ def create_app():
     app.register_blueprint(reports_bp,    url_prefix='/api/reports')
     app.register_blueprint(locations_bp,  url_prefix='/api/locations')
 
+    with app.app_context():
+        db.create_all()
+        from app.models.user import User
+        existing = User.query.filter_by(role='superadmin').first()
+        if not existing:
+            superadmin = User(
+                username='admin1',
+                email='admin@dropoutguard.rw',
+                role='superadmin',
+                first_name='Super',
+                last_name='Admin',
+                must_change_password=False,
+                is_active=True
+            )
+            superadmin.set_password('admin2026!')
+            db.session.add(superadmin)
+            db.session.commit()
+
     return app
