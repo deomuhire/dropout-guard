@@ -39,24 +39,31 @@ def create_app():
 
     with app.app_context():
         try:
+            print("🔄 Attempting to create database tables...")
             db.create_all()
             print("✅ Tables created successfully")
+            
+            from app.models.user import User
+            existing = User.query.filter_by(role='superadmin').first()
+            if not existing:
+                superadmin = User(
+                    username='admin1',
+                    email='admin@dropoutguard.rw',
+                    role='superadmin',
+                    first_name='Super',
+                    last_name='Admin',
+                    must_change_password=False,
+                    is_active=True
+                )
+                superadmin.set_password('admin2026!')
+                db.session.add(superadmin)
+                db.session.commit()
+                print("✅ Superadmin created!")
+            else:
+                print("✅ Superadmin already exists")
         except Exception as e:
-            print(f"❌ Error creating tables: {e}")
-        from app.models.user import User
-        existing = User.query.filter_by(role='superadmin').first()
-        if not existing:
-            superadmin = User(
-                username='admin1',
-                email='admin@dropoutguard.rw',
-                role='superadmin',
-                first_name='Super',
-                last_name='Admin',
-                must_change_password=False,
-                is_active=True
-            )
-            superadmin.set_password('admin2026!')
-            db.session.add(superadmin)
-            db.session.commit()
+            print(f"❌ Database setup error: {e}")
+            import traceback
+            traceback.print_exc()
 
     return app
