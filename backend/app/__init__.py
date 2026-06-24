@@ -16,7 +16,17 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": [
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://127.0.0.1:3000",
+                "http://127.0.0.1:5173",
+            ]
+        }
+    })
+
 
     # Register all blueprints
     from .routes.auth import auth_bp
@@ -27,6 +37,8 @@ def create_app():
     from .routes.reports import reports_bp
     from .routes.locations import locations_bp
     from .routes.dos_teachers_students import students_for_teachers_bp
+    from .routes.password_reset import reset_bp
+
 
     app.register_blueprint(auth_bp,       url_prefix='/api/auth')
     app.register_blueprint(users_bp,      url_prefix='/api/users')
@@ -36,16 +48,22 @@ def create_app():
     app.register_blueprint(attendance_bp, url_prefix='/api/attendance')
     app.register_blueprint(reports_bp,    url_prefix='/api/reports')
     app.register_blueprint(locations_bp,  url_prefix='/api/locations')
+    app.register_blueprint(reset_bp,      url_prefix='/api/auth')
+
+
 
     with app.app_context():
         try:
+            from .models.user import User
+            from .models.password_reset_token import PasswordResetToken  # noqa: F401
+
             print("🔄 Attempting to create database tables...")
             db.create_all()
             print("✅ Tables created successfully")
-            
-            from .models.user import User
+
             existing = User.query.filter_by(role='superadmin').first()
             if not existing:
+
                 superadmin = User(
                     username='admin1',
                     email='admin@dropoutguard.rw',

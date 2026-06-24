@@ -1,5 +1,11 @@
 import time
+import sys
+import os
+
+sys.path.append(os.path.dirname(__file__))
+
 from app import create_app, db
+
 from app.models.user import User
 from app.models.school import School
 from app.models.student import Student

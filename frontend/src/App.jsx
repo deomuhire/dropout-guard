@@ -9,8 +9,10 @@ import ReportDetail from './pages/ReportDetail'
 import UserManagement from './pages/UserManagement'
 import MyClass from './pages/MyClass'
 import RiskFrequency from './pages/RiskFrequency'
+import ResetPassword from './pages/ResetPassword'
 import Layout from './components/Layout'
 import PasswordCriteria from './components/PasswordCriteria'
+
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -119,11 +121,13 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/" element={
             <ProtectedRoute>
               <Layout />
             </ProtectedRoute>
           }>
+
             <Route index element={<Dashboard />} />
             <Route path="students/:id/form" element={<StudentForm />} />
             <Route path="my-class" element={<MyClass />} />

@@ -2,9 +2,16 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from .. import db
 from ..models.user import User
+from ..models.password_reset_token import PasswordResetToken
 from ..utils.auth import validate_password
+from ..utils.email import send_password_reset_email
+
+import secrets
+import os
+import urllib.parse
 
 auth_bp = Blueprint('auth', __name__)
+
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -49,6 +56,7 @@ def get_me():
 @auth_bp.route('/change-password', methods=['PUT'])
 @jwt_required()
 def change_password():
+
     user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     data = request.get_json() or {}
@@ -75,9 +83,36 @@ def forgot_password():
 
     user = User.query.filter_by(email=email).first()
 
-    # Email delivery is not configured yet, so avoid revealing account existence.
+    # Avoid revealing account existence.
     if user:
-        print(f"Password reset requested for {user.username} ({user.email}). Add email delivery to send a real reset link.")
+        token = secrets.token_urlsafe(48)
+
+        # Expire after 30 minutes (configurable later if needed)
+        prt = PasswordResetToken.create_for_user(user.id, token, expires_minutes=30)
+        db.session.add(prt)
+        db.session.commit()
+
+        # Frontend base URL for reset page link
+        frontend_base = os.getenv('FRONTEND_BASE_URL', 'http://localhost:5173')
+        reset_link = f"{frontend_base}/reset-password?token={urllib.parse.quote(token)}"
+
+        try:
+            send_password_reset_email({
+                'smtp_host': os.getenv('SMTP_HOST'),
+                'smtp_port': int(os.getenv('SMTP_PORT', '587')),
+                'smtp_user': os.getenv('SMTP_USER'),
+                'smtp_password': os.getenv('SMTP_PASSWORD'),
+                'email_from': os.getenv('EMAIL_FROM'),
+                'to_email': user.email,
+                'reset_link': reset_link,
+                'username': user.username,
+            })
+        except Exception as e:
+            # Log but still return generic message
+            print(f"❌ Failed to send password reset email: {e}")
+            print(f"Reset token (dev): {token}")
+
     return jsonify({
         'message': 'If an account with this email exists, a password reset link will be sent to your email address.'
     }), 200
+

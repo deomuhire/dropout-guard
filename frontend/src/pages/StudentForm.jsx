@@ -272,6 +272,12 @@ function StudentFormInner() {
   // Attendance is represented by absenteeism in the ML input.
   // Requirement says only these fields should be on the UI; so we keep the attendance buttons.
   const handleAttendanceSubmit = (studentId, attended) => {
+    if (!attended && form._today_attended !== true) {
+      if (typeof form._today_attended !== 'boolean') {
+        alert('Please select attendance for all students before submitting')
+        return
+      }
+    }
     // Attended/Not attended are today attendance buttons.
     // They MUST NOT overwrite the ML feature `absenteeism` (many-days absence).
     handleSubmit(studentId, {
