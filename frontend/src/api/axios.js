@@ -2,13 +2,11 @@ import axios from 'axios'
 
 const rawBase = import.meta.env.VITE_API_URL
 
-// Normalize baseURL:
-// - If VITE_API_URL is set (Vercel), use it as-is (NO /api suffix).
-// - If not set (local), use http://localhost:5000.
-// - Defensively strip a trailing `/api` if present to avoid `/api/api/...`.
-const normalizedBaseURL = rawBase
-  ? String(rawBase).replace(/\/+$/, '').replace(/\/(api)\/?$/i, '')
-  : 'http://localhost:5000'
+const base = rawBase
+  ? String(rawBase).replace(/\/+$/, '')
+  : 'http://127.0.0.1:5000'
+
+const normalizedBaseURL = base.endsWith('/api') ? base : `${base}/api`
 
 const api = axios.create({
   // All request paths in the app already include `/api/...`.
