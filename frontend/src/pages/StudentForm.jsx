@@ -474,14 +474,14 @@ function StudentFormInner() {
         }
       })
       await Promise.all(promises)
-      // Reload the attendance data to reflect saved records
       await loadStudentAndForm()
       setAllSubmitted(true)
       alert('Submitted attendances for all students')
+      navigate('/')
 
     } finally {
-    setBatchSaving(false)
-  }
+      setBatchSaving(false)
+    }
 
   }
 
