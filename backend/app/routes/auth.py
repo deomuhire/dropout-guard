@@ -82,37 +82,34 @@ def forgot_password():
         return jsonify({'error': 'Email is required'}), 400
 
     user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'No account is registered with this email address.'}), 404
 
-    # Avoid revealing account existence.
-    if user:
-        token = secrets.token_urlsafe(48)
+    token = secrets.token_urlsafe(48)
 
-        # Expire after 30 minutes (configurable later if needed)
-        prt = PasswordResetToken.create_for_user(user.id, token, expires_minutes=30)
-        db.session.add(prt)
-        db.session.commit()
+    prt = PasswordResetToken.create_for_user(user.id, token, expires_minutes=30)
+    db.session.add(prt)
+    db.session.commit()
 
-        # Frontend base URL for reset page link
-        frontend_base = os.getenv('FRONTEND_BASE_URL', 'http://localhost:5173')
-        reset_link = f"{frontend_base}/reset-password?token={urllib.parse.quote(token)}"
+    frontend_base = os.getenv('FRONTEND_BASE_URL', 'http://localhost:5173')
+    reset_link = f"{frontend_base}/reset-password?token={urllib.parse.quote(token)}"
 
-        try:
-            send_password_reset_email({
-                'smtp_host': os.getenv('SMTP_HOST'),
-                'smtp_port': int(os.getenv('SMTP_PORT', '587')),
-                'smtp_user': os.getenv('SMTP_USER'),
-                'smtp_password': os.getenv('SMTP_PASSWORD'),
-                'email_from': os.getenv('EMAIL_FROM'),
-                'to_email': user.email,
-                'reset_link': reset_link,
-                'username': user.username,
-            })
-        except Exception as e:
-            # Log but still return generic message
-            print(f"❌ Failed to send password reset email: {e}")
-            print(f"Reset token (dev): {token}")
+    try:
+        send_password_reset_email({
+            'smtp_host': os.getenv('SMTP_HOST'),
+            'smtp_port': int(os.getenv('SMTP_PORT', '587')),
+            'smtp_user': os.getenv('SMTP_USER'),
+            'smtp_password': os.getenv('SMTP_PASSWORD'),
+            'email_from': os.getenv('EMAIL_FROM'),
+            'to_email': user.email,
+            'reset_link': reset_link,
+            'username': user.username,
+        })
+    except Exception as e:
+        print(f"❌ Failed to send password reset email: {e}")
+        return jsonify({'error': 'Failed to send reset email. Please try again later.'}), 500
 
     return jsonify({
-        'message': 'If an account with this email exists, a password reset link will be sent to your email address.'
+        'message': 'A password reset link has been sent to your email address.'
     }), 200
 
