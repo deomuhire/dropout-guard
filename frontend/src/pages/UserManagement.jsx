@@ -353,7 +353,7 @@ export default function UserManagement() {
                 Required headers: studentid, student name, student guidian, village.
               </p>
             </div>
-            <div style={{ width: 140 }}>
+            <div style={{ minWidth: 140, flex: '0 1 140px' }}>
               <label>Class</label>
               <select value={csvClass} onChange={e => { setCsvClass(e.target.value); setUploadedClass('') }}>
                 {CLASS_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
@@ -382,7 +382,7 @@ export default function UserManagement() {
           position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100
         }}>
-          <div className="card" style={{ width: 540, maxHeight: '90vh', overflowY: 'auto' }}>
+          <div className="card" style={{ maxWidth: 540, width: 'calc(100% - 32px)', maxHeight: '90vh', overflowY: 'auto', margin: '0 auto' }}>
             <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 20 }}>
               {editUser ? 'Edit User' : `Create ${nextRole}`}
             </h2>

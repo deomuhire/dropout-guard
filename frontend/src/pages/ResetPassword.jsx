@@ -66,7 +66,7 @@ export default function ResetPassword() {
         background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
       }}
     >
-      <div className="card" style={{ width: 420 }}>
+      <div className="card" style={{ maxWidth: 420, width: 'calc(100% - 32px)' }}>
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <div style={{ fontSize: 40, marginBottom: 8 }}>🔑</div>
           <h1 style={{ fontSize: 22, fontWeight: 800 }}>Reset Password</h1>

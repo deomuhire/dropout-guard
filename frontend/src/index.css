@@ -51,3 +51,80 @@ table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #f1f5f9; }
 th { background: #f8fafc; font-weight: 600; color: #475569; font-size: 13px; }
 tr:hover td { background: #f8fafc; }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 10px;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+
+  input, select {
+    padding: 10px 12px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+  label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 8px 10px;
+  }
+
+  .card table,
+  .card > div[style*="overflowX"] table,
+  .card > div[style*="overflow"] table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  input[style*="width: 280"],
+  input[style*="width:280"] {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  input[style*="width: 240"],
+  input[style*="width:240"] {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .sidebar-close-btn {
+    display: block !important;
+  }
+
+  .sidebar-toggle-btn {
+    display: flex !important;
+  }
+
+  main[style*="padding: 32px"] {
+    padding: 16px !important;
+  }
+}
+
+/* Desktop: show sidebar normally */
+@media (min-width: 769px) {
+  aside {
+    position: relative !important;
+    transform: none !important;
+    z-index: auto !important;
+  }
+}

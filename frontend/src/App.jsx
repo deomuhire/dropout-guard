@@ -79,7 +79,7 @@ function ForcePasswordChange() {
       position:'fixed', inset:0, background:'rgba(15,23,42,0.72)', zIndex:500,
       display:'flex', alignItems:'center', justifyContent:'center'
     }}>
-      <form onSubmit={submit} className="card" style={{ width:460, position:'relative' }}>
+      <form onSubmit={submit} className="card" style={{ maxWidth: 460, width: 'calc(100% - 32px)', position:'relative', margin: '0 auto' }}>
         <button
           type="button"
           onClick={handleClose}

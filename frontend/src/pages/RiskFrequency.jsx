@@ -134,7 +134,7 @@ export default function RiskFrequency() {
               onChange={e => setSearchTerm(e.target.value)}
               style={{
                 padding:'8px 14px', borderRadius:6, border:'1px solid #e2e8f0',
-                fontSize:13, width:240, outline:'none'
+                fontSize:13, maxWidth:240, width:'100%', outline:'none'
               }}
             />
             <button
@@ -214,7 +214,7 @@ export default function RiskFrequency() {
         }}
         onClick={() => { setSelectedStudent(null); setStudentFactors(null) }}
         >
-          <div className="card" style={{ width:640, maxHeight:'80vh', overflowY:'auto' }}
+          <div className="card" style={{ maxWidth: 640, width: 'calc(100% - 32px)', maxHeight:'80vh', overflowY:'auto' }}
             onClick={e => e.stopPropagation()}>
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
               <div>

@@ -69,7 +69,7 @@ export default function MyClass() {
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:24 }}>
+      <div style={{ display:'grid', gap:16, marginBottom:24, gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
         <div className="card" style={{ textAlign:'center' }}>
           <div style={{ fontSize:28, fontWeight:700, color:'#2563eb' }}>{totalStudents}</div>
           <div style={{ fontSize:12, color:'#64748b', marginTop:4 }}>Total Students</div>
@@ -97,7 +97,7 @@ export default function MyClass() {
             placeholder="Search by name, ID, guardian, village..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            style={{ padding:'8px 14px', border:'1px solid #e2e8f0', borderRadius:8, fontSize:13, width:280 }}
+            style={{ padding:'8px 14px', border:'1px solid #e2e8f0', borderRadius:8, fontSize:13, maxWidth:280, width:'100%' }}
           />
         </div>
         <table>

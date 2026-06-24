@@ -49,7 +49,7 @@ export default function Login() {
       alignItems: 'center', justifyContent: 'center',
       background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
     }}>
-      <div className="card" style={{ width: 380 }}>
+      <div className="card" style={{ maxWidth: 380, width: 'calc(100% - 32px)' }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontSize: 40, marginBottom: 8 }}>🎓</div>
           <h1 style={{ fontSize: 22, fontWeight: 700 }}>DropoutGuard</h1>

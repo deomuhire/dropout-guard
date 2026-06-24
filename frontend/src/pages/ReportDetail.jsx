@@ -323,7 +323,7 @@ export default function ReportDetail() {
             placeholder="Search by name, ID, guardian, village..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            style={{ padding: '8px 14px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 13, width: 280 }}
+            style={{ padding: '8px 14px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 13, maxWidth: 280, width: '100%' }}
           />
         </div>
 
