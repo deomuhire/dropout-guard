@@ -1003,6 +1003,9 @@ export default function Dashboard() {
             <button className="btn btn-secondary" onClick={loadData} style={{ minWidth: 120 }}>
               Refresh
             </button>
+            <button className="btn btn-primary" onClick={() => navigate('/students/all/form')} style={{ minWidth: 130 }}>
+              Attendance
+            </button>
             <button className="btn btn-primary" onClick={() => navigate('/reports')} style={{ minWidth: 140 }}>
               View Reports
             </button>
