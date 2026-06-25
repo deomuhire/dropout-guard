@@ -358,8 +358,9 @@ def risk_frequency():
     """Return per-student risk frequency across ALL attendance records for the scoped users.
 
     For each student:
-      - total_at_risk: number of Attendance rows where at_risk == True
-      - not_attended_count: number of today's Attendance rows marked not attended
+      - total_at_risk: number of Attendance rows where at_risk == True (across all dates)
+      - at_risk_count: same as total_at_risk
+      - not_attended_count: number of Attendance rows marked not attended (across all dates)
 
     Students with no attendance rows are included with 0 counts.
     """
@@ -393,24 +394,22 @@ def risk_frequency():
     ).all()
     attendance_made_count = len({r.date for r in all_records if r.date})
 
-    # Frequency: only count NOT attended for today.
-    today = date.today()
-
     # Initialize counts for every student_id so missing records still appear
     freq_map = {
         sid: {
             'not_attended_count': 0,
+            'at_risk_count': 0,
         }
         for sid in student_ids
     }
 
     for r in all_records:
-        if not r.date or r.date != today:
-            continue
-
         sid = r.student_id
         if sid not in freq_map:
             continue
+
+        if r.at_risk is True:
+            freq_map[sid]['at_risk_count'] += 1
 
         if _was_not_attended(r):
             freq_map[sid]['not_attended_count'] += 1
@@ -420,6 +419,7 @@ def risk_frequency():
     for student in students:
         counts = freq_map.get(student.id, {
             'not_attended_count': 0,
+            'at_risk_count': 0,
         })
 
         result.append({
@@ -430,8 +430,9 @@ def risk_frequency():
             'class_name': student.class_.name if student.class_ else 'Unassigned',
             'school_name': student.school.name if student.school else 'Unknown',
             'not_attended_count': counts['not_attended_count'],
+            'at_risk_count': counts['at_risk_count'],
+            'total_at_risk': counts['at_risk_count'],
             'attendance_made_count': attendance_made_count,
-            'date': today.isoformat(),
         })
 
     # Sort: most not-attended first
