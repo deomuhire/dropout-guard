@@ -21,4 +21,6 @@ class Config:
     SMTP_USER = os.getenv('SMTP_USER')
     SMTP_PASSWORD = os.getenv('SMTP_PASSWORD')
     EMAIL_FROM = os.getenv('EMAIL_FROM')
+    FRONTEND_BASE_URL = os.getenv('FRONTEND_BASE_URL', 'http://localhost:5173')
+    FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
 

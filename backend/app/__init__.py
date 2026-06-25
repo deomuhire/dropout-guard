@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+import os
 from .config import Config
 
 db = SQLAlchemy()
@@ -23,6 +24,7 @@ def create_app():
                 "http://localhost:5173",
                 "http://127.0.0.1:3000",
                 "http://127.0.0.1:5173",
+                os.getenv('FRONTEND_URL', 'http://localhost:5173'),
             ]
         }
     })
