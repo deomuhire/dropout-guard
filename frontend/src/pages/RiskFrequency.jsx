@@ -56,7 +56,7 @@ export default function RiskFrequency() {
   }
 
   const downloadCSV = () => {
-    const headers = ['#', 'Student Name', 'Student ID', 'Class', 'School', 'At Risk', 'Not Attended Count', 'Attendance Made Count']
+    const headers = ['#', 'Student Name', 'Student ID', 'Class', 'School', 'At Risk', 'At Risk Count', 'Not Attended Count', 'Attendance Made Count']
     const rows = filtered.map((s, i) => [
       i + 1,
       s.name,
@@ -64,6 +64,7 @@ export default function RiskFrequency() {
       s.class_name,
       s.school_name,
       (s.total_at_risk || 0) > 0 ? 'Yes' : 'No',
+      s.at_risk_count || 0,
       s.not_attended_count || 0,
       s.attendance_made_count || 0
     ])
@@ -89,6 +90,7 @@ export default function RiskFrequency() {
   })
 
   const totalNotAttended = data.reduce((s, r) => s + (r.not_attended_count || 0), 0)
+  const totalAtRisk = data.reduce((s, r) => s + (r.at_risk_count || 0), 0)
   const attendanceMadeCount = data[0]?.attendance_made_count || 0
 
 
@@ -108,10 +110,14 @@ export default function RiskFrequency() {
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:16, marginBottom:24 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, marginBottom:24 }}>
         <div className="card" style={{ textAlign:'center' }}>
           <div style={{ fontSize:32, fontWeight:700, color:'#4f46e5' }}>{data.length}</div>
           <div style={{ fontSize:13, color:'#64748b', marginTop:4 }}>Total Students</div>
+        </div>
+        <div className="card" style={{ textAlign:'center' }}>
+          <div style={{ fontSize:32, fontWeight:700, color:'#dc2626' }}>{totalAtRisk}</div>
+          <div style={{ fontSize:13, color:'#64748b', marginTop:4 }}>Total At Risk</div>
         </div>
         <div className="card" style={{ textAlign:'center' }}>
           <div style={{ fontSize:32, fontWeight:700, color:'#2563eb' }}>{totalNotAttended}</div>
@@ -159,6 +165,7 @@ export default function RiskFrequency() {
                 {user?.role === 'sector_leader' && (
                   <th style={{ padding:'10px 12px', textAlign:'left', fontSize:13, fontWeight:600, color:'#475569' }}>School</th>
                 )}
+                <th style={{ padding:'10px 12px', textAlign:'center', fontSize:13, fontWeight:600, color:'#475569' }}>At Risk Count</th>
                 <th style={{ padding:'10px 12px', textAlign:'center', fontSize:13, fontWeight:600, color:'#475569' }}>Not attended count</th>
 
                 <th style={{ padding:'10px 12px', textAlign:'center', fontSize:13, fontWeight:600, color:'#475569' }}>Action</th>
@@ -167,7 +174,7 @@ export default function RiskFrequency() {
             <tbody>
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={user?.role === 'sector_leader' ? 7 : 6} style={{ textAlign:'center', color:'#94a3b8', padding:32 }}>
+                  <td colSpan={user?.role === 'sector_leader' ? 8 : 7} style={{ textAlign:'center', color:'#94a3b8', padding:32 }}>
                     No students found
                   </td>
                 </tr>
@@ -185,6 +192,9 @@ export default function RiskFrequency() {
                   {user?.role === 'sector_leader' && (
                     <td style={{ padding:'10px 12px', fontSize:13, color:'#64748b' }}>{s.school_name}</td>
                   )}
+                  <td style={{ padding:'10px 12px', textAlign:'center' }}>
+                    <span style={{ padding:'3px 10px', borderRadius:12, fontSize:13, fontWeight:700, background:'#fef2f2', color:'#dc2626' }}>{s.at_risk_count || 0}</span>
+                  </td>
                   <td style={{ padding:'10px 12px', textAlign:'center' }}>
                     <span style={{ padding:'3px 10px', borderRadius:12, fontSize:13, fontWeight:700, background:'#e0f2fe', color:'#1e40af' }}>{s.not_attended_count || 0}</span>
                   </td>
