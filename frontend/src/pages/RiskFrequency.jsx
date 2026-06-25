@@ -89,8 +89,15 @@ export default function RiskFrequency() {
     return true
   })
 
-  const totalNotAttended = data.reduce((s, r) => s + (r.not_attended_count || 0), 0)
-  const totalAtRisk = data.reduce((s, r) => s + (r.at_risk_count || 0), 0)
+  const sorted = [...filtered].sort((a, b) => {
+    const aRisk = a.at_risk_count || 0
+    const bRisk = b.at_risk_count || 0
+    if (bRisk !== aRisk) return bRisk - aRisk
+    const aNA = a.not_attended_count || 0
+    const bNA = b.not_attended_count || 0
+    return bNA - aNA
+  })
+
   const attendanceMadeCount = data[0]?.attendance_made_count || 0
 
 
@@ -110,18 +117,10 @@ export default function RiskFrequency() {
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, marginBottom:24 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(1,1fr)', gap:16, marginBottom:24, maxWidth:400 }}>
         <div className="card" style={{ textAlign:'center' }}>
           <div style={{ fontSize:32, fontWeight:700, color:'#4f46e5' }}>{data.length}</div>
           <div style={{ fontSize:13, color:'#64748b', marginTop:4 }}>Total Students</div>
-        </div>
-        <div className="card" style={{ textAlign:'center' }}>
-          <div style={{ fontSize:32, fontWeight:700, color:'#dc2626' }}>{totalAtRisk}</div>
-          <div style={{ fontSize:13, color:'#64748b', marginTop:4 }}>Total At Risk</div>
-        </div>
-        <div className="card" style={{ textAlign:'center' }}>
-          <div style={{ fontSize:32, fontWeight:700, color:'#2563eb' }}>{totalNotAttended}</div>
-          <div style={{ fontSize:13, color:'#64748b', marginTop:4 }}>Total Not Attended</div>
         </div>
       </div>
 
@@ -172,14 +171,14 @@ export default function RiskFrequency() {
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 && (
+              {sorted.length === 0 && (
                 <tr>
                   <td colSpan={user?.role === 'sector_leader' ? 8 : 7} style={{ textAlign:'center', color:'#94a3b8', padding:32 }}>
                     No students found
                   </td>
                 </tr>
               )}
-              {filtered.map((s, i) => (
+              {sorted.map((s, i) => (
                 <tr key={s.student_id}
                   style={{ borderBottom:'1px solid #f1f5f9', background: (s.total_at_risk || 0) >= 3 ? '#fef2f2' : (s.total_at_risk || 0) >= 1 ? '#fff7ed' : undefined, cursor:'pointer' }}
                   onClick={() => loadStudentFactors(s)}>
@@ -209,9 +208,9 @@ export default function RiskFrequency() {
             </tbody>
           </table>
         </div>
-        {filtered.length > 0 && (
+        {sorted.length > 0 && (
           <p style={{ marginTop:12, color:'#64748b', fontSize:13 }}>
-            Showing {filtered.length} student{filtered.length !== 1 ? 's' : ''} - click a row to view risk factors
+            Showing {sorted.length} student{sorted.length !== 1 ? 's' : ''} - click a row to view risk factors
           </p>
         )}
       </div>
